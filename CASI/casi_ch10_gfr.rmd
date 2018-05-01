@@ -1,0 +1,37 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(magrittr)
+library(ggplot2)
+library(data.table)
+setwd('c:/users/843574/documents/MIDS')
+dt = data.table(read.csv('gfr.csv', header = F))
+head(dt)
+```
+
+```{r}
+ep = seq(13, 106, 3)
+x = ep+1.5
+y = sapply(ep, function(x) sum((dt-x <= 3) & (dt-x > 0)))
+new_dt = data.frame(cbind(x, y))
+for (i in seq(2, 7)) {
+  m = glm(y~poly(x, i), family=poisson)
+  new_dt = cbind(new_dt, fitted(m))
+}
+colnames(new_dt)[3:8] = paste('x', seq(2, 7), sep='')
+```
+
+```{r}
+plt = ggplot(data=new_dt) 
+plt + geom_line(aes(x, x2)) + geom_point(aes(x, x2)) +
+  geom_line(aes(x, x3)) + geom_point(aes(x, x3)) +
+  geom_line(aes(x, x4)) + geom_point(aes(x, x4)) +
+  geom_line(aes(x, x5)) + geom_point(aes(x, x5)) +
+  geom_line(aes(x, x6)) + geom_point(aes(x, x6)) +
+  geom_line(aes(x, x7)) + geom_point(aes(x, x7)) 
+```
+
